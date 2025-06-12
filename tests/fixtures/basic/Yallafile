@@ -1,0 +1,37 @@
+[stop]
+description = "This is a command with no subcommand, called like 'script stop'"
+cmd = "top"
+
+[script]
+description = "this is a direct command, but also has subcommands"
+cmd = "ls -la"
+
+[script.deploy]
+cmd = "echo Deploying to all environments"
+
+[script.deploy-dev]
+cmd = "ls > /dev/null"
+
+[script.test]
+cmd = "true"
+
+[git.status]
+cmd = "git rev-parse --is-inside-work-tree"
+
+[tools.ls]
+cmd = "ls -1"
+
+[bla]
+description = "Some description, but no command. so this should just show which subcomamnds are available"
+
+
+[bla.version]
+cmd = "printf 'Yalla 0.1.0\n'"
+
+[bla.tool.uname]
+description = "Some descriptio"
+cmd = "uname -s"
+
+[bla.tool.sname]
+description = "Some descriptio"
+cmd = "uname -s"
