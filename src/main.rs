@@ -1,106 +1,55 @@
-use std::collections::HashMap;
-use std::env;
-use std::fs;
-use std::process::{exit, Command};
+//! # Yalla - A Namespaced Task Runner
+mod clap_util;
+mod error_util;
+mod model;
+mod process;
+mod toml;
 
-use anyhow::{bail, Context, Result};
-use serde::Deserialize;
+use std::process::exit;
 
-// New, more flexible struct
-#[derive(Debug, Deserialize)]
-#[serde(deny_unknown_fields)] // Good practice to avoid typos in the TOML
-struct CommandNode {
-    // The command to run if this node is executed directly.
-    // It's optional because a namespace like [bla] might not have a cmd.
-    #[serde(default)]
-    cmd: Option<String>,
+use anyhow::Result;
+use clap_util::print_help;
 
-    // The description for help text. Also optional.
-    #[serde(default)]
-    description: Option<String>,
-
-    // Nested subcommands. We use a HashMap to hold them.
-    // `flatten` is the magic attribute that lets us capture all other keys
-    // (like `deploy`, `test`, `tool`) as sub-nodes.
-    #[serde(flatten)]
-    subcommands: HashMap<String, CommandNode>,
-}
-// The root of your TOML file is a map from top-level names to CommandNodes
-type Yallafile = HashMap<String, CommandNode>;
+use crate::clap_util::subcommand_path;
+use crate::model::build_clap_from_root;
+use crate::toml::{load_toml_table, table_to_root};
 
 fn main() -> Result<()> {
-    let args: Vec<String> = env::args().collect();
-    let raw = fs::read_to_string("Yallafile")?;
+    let table = match load_toml_table("Yallafile") {
+        Ok(table) => table,
+        Err(e) if error_util::not_found(&e) => {
+            return Ok(());
+        }
+        Err(e) => return Err(e),
+    };
 
-    // Deserialize into the new, flexible structure
-    let yallafile: Yallafile = toml::from_str(&raw)?;
+    let root = table_to_root("yalla", &table);
+    let mut clap_root = build_clap_from_root(&root);
 
-    if args.len() == 1 {
-        // No args, list top-level commands/namespaces
-        list_commands("Available commands", &yallafile);
+    // Parse CLI
+    let matches = clap_root.clone().get_matches();
+    let path = subcommand_path(&matches);
+
+    if path.is_empty() {
+        // Root requested: show top-level help
+        print_help(&mut clap_root, &[])?;
         return Ok(());
     }
 
-    // Start traversing the command tree from the root
-    let mut current_level = &yallafile;
-    let mut final_node: Option<&CommandNode> = None;
-
-    // Loop through arguments to find the target command
-    for i in 1..args.len() {
-        let arg = &args[i];
-        if let Some(node) = current_level.get(arg) {
-            final_node = Some(node);
-            current_level = &node.subcommands; // Descend for the next iteration
-        } else {
-            bail!("Command '{}' not found.", arg);
-        }
-    }
-
-    // After the loop, decide what to do with the found node
-    if let Some(node) = final_node {
-        if !node.subcommands.is_empty() && args.len() <= yallafile.keys().count() + 1 {
-            // If it has subcommands and the user didn't specify one,
-            // either run its direct `cmd` or list the subcommands.
+    match model::find_node(&root, &path) {
+        Some(node) => {
             if let Some(cmd) = &node.cmd {
-                return execute_command(cmd);
+                let status = process::execute(cmd)?;
+                exit(process::exit_code(status));
             } else {
-                list_commands(
-                    &format!("Available subcommands for '{}'", args.last().unwrap()),
-                    &node.subcommands,
-                );
-                return Ok(());
+                // Namespace-only: show contextual help
+                print_help(&mut clap_root, &path)?;
             }
         }
-
-        if let Some(cmd) = &node.cmd {
-            return execute_command(cmd);
-        } else {
-            bail!(
-                "'{}' is a namespace. Please specify a subcommand.",
-                args.last().unwrap()
-            );
+        None => {
+            // Shouldn't happen (clap validated), but show the closest help just in case
+            print_help(&mut clap_root, &[])?;
         }
-    }
-
-    Ok(())
-}
-
-fn list_commands(title: &str, commands: &HashMap<String, CommandNode>) {
-    println!("{}:", title);
-    for name in commands.keys() {
-        println!("  {}", name);
-    }
-}
-
-fn execute_command(cmd: &str) -> Result<()> {
-    let status = Command::new("sh")
-        .arg("-c")
-        .arg(cmd)
-        .status()
-        .context("Failed to execute command")?;
-
-    if !status.success() {
-        exit(status.code().unwrap_or(1));
     }
 
     Ok(())

@@ -1,37 +1,49 @@
+title = "This is a demo top level title"
+
+# A) Top-level leaf (has cmd, no children)
 [stop]
-description = "This is a command with no subcommand, called like 'script stop'"
-cmd = "top"
+description = "Stop local services"
+cmd = "docker compose down"
 
-[script]
-description = "this is a direct command, but also has subcommands"
-cmd = "ls -la"
+# B) Explicit parent (has description, no cmd) + children (leaves)
+[tools]
+description = "Developer tooling"
 
-[script.deploy]
-cmd = "echo Deploying to all environments"
+[tools.fmt]
+cmd = "cargo fmt"
 
-[script.deploy-dev]
-cmd = "ls > /dev/null"
-
-[script.test]
-cmd = "true"
-
-[git.status]
-cmd = "git rev-parse --is-inside-work-tree"
+[tools.lint]
+cmd = "cargo clippy --all-targets --all-features -- -D warnings"
 
 [tools.ls]
 cmd = "ls -1"
 
-[bla]
-description = "Some description, but no command. so this should just show which subcomamnds are available"
+# C) Parent with cmd AND children
+[script]
+description = "Project scripts (also runnable)"
+cmd = "bash ./scripts/run.sh"
 
+[script.deploy]
+cmd = "bash ./scripts/deploy.sh --env=prod"
 
-[bla.version]
-cmd = "printf 'Yalla 0.1.0\n'"
+[script.test]
+cmd = "cargo test --all --all-features"
 
-[bla.tool.uname]
-description = "Some descriptio"
-cmd = "uname -s"
+# D) Implicit parent with a single child (no [db] section)
+[db.migrate]
+cmd = "diesel migration run"
 
-[bla.tool.sname]
-description = "Some descriptio"
-cmd = "uname -s"
+# E) Implicit parent with multiple children (no [ci] section)
+[ci.build]
+cmd = "cargo build --release"
+
+[ci.test]
+cmd = "cargo test --workspace"
+
+# F) Deep nesting via implicit parents (no [kube] or [kube.dev] sections)
+[kube.dev.apply]
+cmd = "kubectl apply -k k8s/overlays/dev"
+
+# G) Another realistic leaf under a different namespace (implicit parent)
+[git.status]
+cmd = "git rev-parse --is-inside-work-tree"
