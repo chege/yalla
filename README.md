@@ -1,3 +1,5 @@
+[![CI](https://github.com/chege/yalla/actions/workflows/ci.yaml/badge.svg)](https://github.com/chege/yalla/actions/workflows/ci.yaml)
+
 # Yalla
 
 Yalla is a configurable CLI runner designed to execute commands defined in a TOML configuration file. It provides a
