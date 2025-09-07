@@ -1,0 +1,8 @@
+bin.name = "yalla"
+fs.cwd = "../fixtures/basic"
+args = ["tools", "ls"]
+status.code = 0
+stdout = """
+Yallafile
+"""
+stderr = ""

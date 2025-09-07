@@ -1,0 +1,14 @@
+bin.name = "yalla"
+fs.cwd = "../fixtures/basic"
+args = ["tools", "ls", "--help"]
+status.code = 0
+stdout = """
+Usage: yalla tools ls [args]...
+
+Arguments:
+  [args]...  
+
+Options:
+  -h, --help  Print help
+"""
+stderr = ""
