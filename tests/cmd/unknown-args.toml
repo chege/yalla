@@ -1,0 +1,14 @@
+bin.name = "yalla"
+fs.cwd = "../fixtures/basic"
+args = ["toools"]
+status.code = 2
+stdout = ""
+stderr = """
+error: unrecognized subcommand 'toools'
+
+  tip: a similar subcommand exists: 'tools'
+
+Usage: yalla <COMMAND>
+
+For more information, try '--help'.
+"""
