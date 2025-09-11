@@ -13,7 +13,7 @@ updates:
     target-branch: "main"
     # Customize PR commit messages
     commit-message:
-      prefix: "chore(deps)"
+      prefix: "chore"
       include: scope
     reviewers:
       - "chege"
@@ -40,7 +40,7 @@ updates:
     open-pull-requests-limit: 5
     target-branch: "main"
     commit-message:
-      prefix: "chore(actions)"
+      prefix: "chore"
       include: scope
     reviewers:
       - "chege"
@@ -60,7 +60,7 @@ updates:
     open-pull-requests-limit: 1
     target-branch: "main"
     commit-message:
-      prefix: "chore(rust)"
+      prefix: "chore"
       include: scope
     reviewers:
       - "chege"
