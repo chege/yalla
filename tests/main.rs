@@ -1,11 +1,11 @@
-// tests/it_cli.rs
-use snapbox::cmd::{Command, cargo_bin};
+use snapbox::cargo_bin;
+use snapbox::cmd::Command;
 use tempfile::tempdir;
 
 /// Root (no args): clap shows help on stderr and exits with code 2.
 #[test]
 fn root_help() {
-    let output = Command::new(cargo_bin("yalla"))
+    let output = Command::new(cargo_bin!("yalla"))
         .current_dir("tests/fixtures/basic")
         .output()
         .unwrap();
@@ -28,7 +28,7 @@ fn root_help() {
 /// Namespace without child: `yalla ci` prints its own help and exits 2.
 #[test]
 fn namespace_help() {
-    let output = Command::new(cargo_bin("yalla"))
+    let output = Command::new(cargo_bin!("yalla"))
         .current_dir("tests/fixtures/basic")
         .args(["ci"])
         .output()
@@ -44,7 +44,7 @@ fn namespace_help() {
 /// Leaf runs: `yalla tools ls` should succeed and list the Yallafile in that dir.
 #[test]
 fn leaf_exec_tools_ls() {
-    let output = Command::new(cargo_bin("yalla"))
+    let output = Command::new(cargo_bin!("yalla"))
         .current_dir("tests/fixtures/basic")
         .args(["tools", "ls"])
         .output()
@@ -61,7 +61,7 @@ fn leaf_exec_tools_ls() {
 /// Typo suggestion from clap.
 #[test]
 fn typo_suggestion() {
-    let output = Command::new(cargo_bin("yalla"))
+    let output = Command::new(cargo_bin!("yalla"))
         .current_dir("tests/fixtures/basic")
         .args(["ci", "buil"])
         .output()
@@ -84,7 +84,7 @@ fn typo_suggestion() {
 fn yallafile_missing_is_noop() {
     let tmp = tempdir().unwrap();
 
-    let output = Command::new(cargo_bin("yalla"))
+    let output = Command::new(cargo_bin!("yalla"))
         .current_dir(tmp.path())
         .output()
         .unwrap();
@@ -105,7 +105,7 @@ fn yallafile_missing_is_noop() {
 /// Unknown top-level subcommand errors (clap), code 2.
 #[test]
 fn unknown_top_level() {
-    let output = Command::new(cargo_bin("yalla"))
+    let output = Command::new(cargo_bin!("yalla"))
         .current_dir("tests/fixtures/basic")
         .args(["nope"])
         .output()
