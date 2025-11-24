@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       # No explicit rustup component adds needed; rust-toolchain.toml handles that
       - uses: Swatinem/rust-cache@v2
       - run: cargo fmt --all -- --check
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: Swatinem/rust-cache@v2
 
       - name: clippy (stable, deny warnings)
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: Swatinem/rust-cache@v2
       - name: Generate minimal lockfile
         run: cargo +nightly generate-lockfile -Z minimal-versions
@@ -60,7 +60,7 @@ jobs:
       matrix:
         os: [ ubuntu-24.04, macos-latest ] # omit windows due to POSIX commands in trycmd cases
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: Swatinem/rust-cache@v2
       - name: Build (locked)
         env:
