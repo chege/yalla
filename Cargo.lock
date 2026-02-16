@@ -467,7 +467,7 @@ dependencies = [
  "normalize-line-endings",
  "os_pipe",
  "similar",
- "snapbox-macros",
+ "snapbox-macros 0.4.0",
  "tempfile",
  "wait-timeout",
  "walkdir",
@@ -475,10 +475,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "snapbox"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71d70a71b68054cbe88708f77abfc4bd2daf75028f8f55f4f1cff63565df89ea"
+dependencies = [
+ "anstream",
+ "anstyle",
+ "normalize-line-endings",
+ "similar",
+ "snapbox-macros 1.0.0",
+]
+
+[[package]]
 name = "snapbox-macros"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3b750c344002d7cc69afb9da00ebd9b5c0f8ac2eb7d115d9d45d5b5f47718d74"
+dependencies = [
+ "anstream",
+]
+
+[[package]]
+name = "snapbox-macros"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d248cef42e1456ab2f7149c0376985351b7d849ea9ad2a957bf15ddfebf1fdf9"
 dependencies = [
  "anstream",
 ]
@@ -581,7 +603,7 @@ dependencies = [
  "rayon",
  "serde",
  "shlex",
- "snapbox",
+ "snapbox 0.6.24",
  "toml_edit",
 ]
 
@@ -809,7 +831,7 @@ dependencies = [
  "anyhow",
  "clap",
  "shlex",
- "snapbox",
+ "snapbox 1.0.0",
  "tempfile",
  "toml",
  "trycmd",
